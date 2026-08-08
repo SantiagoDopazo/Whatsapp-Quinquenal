@@ -39,5 +39,11 @@ module WhatsappQuinquenal
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Devise/Warden expect a session to be present even though auth here is
+    # actually stateless (devise-jwt). No cookies are set for auth itself.
+    config.session_store :cookie_store, key: "_whatsapp_quinquenal_session"
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use config.session_store, config.session_options
   end
 end
