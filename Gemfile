@@ -32,6 +32,14 @@ gem "image_processing", "~> 1.2"
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors"
 
+# Authentication for agents
+gem "devise"
+# Stateless JWT auth for Devise, needed since the frontend lives on a different origin
+gem "devise-jwt"
+
+# Serializers for JSON API responses
+gem "blueprinter"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -44,4 +52,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Annotates models with a schema comment, kept in sync after each migration.
+  # Modern, maintained replacement for the "annotate" gem (unmaintained, caps
+  # activerecord < 8.0).
+  gem "annotaterb"
 end
