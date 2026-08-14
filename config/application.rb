@@ -45,5 +45,7 @@ module WhatsappQuinquenal
     config.session_store :cookie_store, key: "_whatsapp_quinquenal_session"
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use config.session_store, config.session_options
+    # Avo's views use flash, which api_only mode strips out by default.
+    config.middleware.use ActionDispatch::Flash
   end
 end

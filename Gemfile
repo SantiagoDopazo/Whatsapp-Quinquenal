@@ -40,6 +40,10 @@ gem "devise-jwt"
 # Serializers for JSON API responses
 gem "blueprinter"
 
+# Admin panel (browser UI), needs an asset pipeline since this app is --api
+gem "propshaft"
+gem "avo"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
