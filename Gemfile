@@ -61,4 +61,10 @@ group :development, :test do
   # Modern, maintained replacement for the "annotate" gem (unmaintained, caps
   # activerecord < 8.0).
   gem "annotaterb"
+
+  # Testing framework
+  gem "rspec-rails"
+
+  # Test data builders, replaces fixtures
+  gem "factory_bot_rails"
 end
