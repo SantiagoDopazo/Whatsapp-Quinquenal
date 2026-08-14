@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ingresar - Avo</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f4f5f7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .card {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        width: 320px;
+      }
+      h1 { font-size: 1.25rem; margin: 0 0 1.5rem; }
+      label { display: block; font-size: 0.85rem; margin-bottom: 0.25rem; color: #333; }
+      input {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 0.6rem;
+        background: #111;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .alert { color: #c0392b; font-size: 0.85rem; margin-bottom: 1rem; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Ingresar a Avo</h1>
+
+      <% if flash[:alert] %>
+        <div class="alert"><%= flash[:alert] %></div>
+      <% end %>
+
+      <%= form_with url: "/login", method: :post do %>
+        <label>Email</label>
+        <input type="email" name="email" required autofocus>
+
+        <label>Contraseña</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Ingresar</button>
+      <% end %>
+    </div>
+  </body>
+</html>
