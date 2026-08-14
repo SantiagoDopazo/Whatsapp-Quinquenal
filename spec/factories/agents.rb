@@ -1,5 +1,3 @@
-require "test_helper"
-
 # == Schema Information
 #
 # Table name: agents
@@ -22,8 +20,11 @@ require "test_helper"
 #  index_agents_on_jti                   (jti) UNIQUE
 #  index_agents_on_reset_password_token  (reset_password_token) UNIQUE
 #
-class AgentTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+FactoryBot.define do
+  factory :agent do
+    sequence(:email) { |n| "agent#{n}@example.com" }
+    name { "Test Agent" }
+    password { "password123" }
+    role { "agent" }
+  end
 end
