@@ -84,7 +84,7 @@ GEM
       activerecord (>= 6.0.0)
       activesupport (>= 6.0.0)
     ast (2.4.3)
-    avo (4.1.6)
+    avo (4.1.12)
       actionview (>= 6.1)
       active_link_to
       activerecord (>= 6.1)
@@ -151,8 +151,6 @@ GEM
     factory_bot_rails (6.5.1)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
-    ffi (1.17.4-x64-mingw-ucrt)
-    ffi (1.17.4-x86_64-linux-gnu)
     fugit (1.13.0)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
