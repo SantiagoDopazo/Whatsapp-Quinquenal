@@ -14,8 +14,15 @@
 #  index_contacts_on_whatsapp_id  (whatsapp_id) UNIQUE
 #
 class Contact < ApplicationRecord
-  include CompanyOwned
+  belongs_to :company
   has_many :conversations, dependent: :destroy
 
   validates :whatsapp_id, presence: true, uniqueness: { scope: :company_id }
+  validate :company_cannot_change, on: :update
+
+  private
+
+  def company_cannot_change
+    errors.add(:company, "cannot be changed") if will_save_change_to_company_id?
+  end
 end
