@@ -12,6 +12,7 @@ La separación de identidades y el acceso interno están implementados. Los flag
 
 ## Documentación
 
+- [Estado de entregas y pendientes para retomar](docs/development-status.md).
 - [Acceso interno, API por empresa y alta de desarrolladores](docs/company-authorization.md).
 - [Entorno de pruebas y comprobaciones de CI](docs/test-environment.md).
 - [Base de empresas y migración](docs/company-foundation.md).
