@@ -36,3 +36,7 @@ Las altas posteriores y los cambios de contraseña se realizan con acceso de con
 La migración agrega developers con nombre, email único y contraseña cifrada por Devise. No modifica agentes, empresas ni contactos ni asigna privilegios a registros existentes. El rollback elimina las identidades internas y su acceso al panel; conserva los datos de las empresas.
 
 Se verifican login interno, logout, rechazo de credenciales de empresas, sesiones separadas, aislamiento de la API con JWT real, integridad de referencias, aprovisionamiento repetible sin contraseña por defecto y migración/rollback. Las pruebas de vistas se ejecutan fuera del sandbox porque sus restricciones de enumeración de rutas absolutas impiden que Rails encuentre templates locales. La revisión visual manual queda pendiente; no hay llamadas a Meta.
+
+## Consultas explícitas de acceso
+
+CompanyAccess expone companies, agents, contacts y conversations. Se elimina scope(model) y la selección por nombres de clases; los métodos devuelven relaciones filtradas, también vacías sin un agente. No cambia rutas, permisos ni datos. Validación del refactor: 48 ejemplos RSpec sin fallos en PostgreSQL temporal y RuboCop de modelo/spec sin infracciones.
