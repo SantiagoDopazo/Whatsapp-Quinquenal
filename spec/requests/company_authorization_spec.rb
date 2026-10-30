@@ -9,6 +9,7 @@ RSpec.describe "Company API authorization", type: :request do
   before do
     post "/agents/sign_in", params: { agent: { email: admin.email, password: "password123" } }, as: :json
     authorization
+    cookies.delete("_whatsapp_quinquenal_session")
   end
 
   it "allows a colleague with an agent JWT" do
