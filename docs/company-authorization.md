@@ -27,7 +27,7 @@ El formulario identifica el acceso como interno, protege contra CSRF y renueva l
 
 ## Alta inicial y recuperación de acceso
 
-Definir SEED_DEVELOPER_EMAIL y SEED_DEVELOPER_PASSWORD en el entorno de un proceso de confianza y ejecutar `bundle exec rails db:seed`. SEED_DEVELOPER_NAME es opcional. Ambos valores de acceso son obligatorios si se configura uno de ellos; sin ellos no se crea ningún Developer. Los seeds se pueden repetir sin duplicar cuentas ni restablecer contraseñas existentes. No se guardan secretos en Git ni se incluyen valores reales en ejemplos.
+Ejecutar `bundle exec rails db:seed` crea `developer@quinquenal.test`, con nombre Desarrollador y contraseña inicial tomada de SEED_DEVELOPER_PASSWORD mediante ENV.fetch. La variable es obligatoria al crear la cuenta; si falta, la seed falla. Repetir las seeds no duplica la cuenta ni cambia su contraseña. SEED_DEVELOPER_EMAIL y SEED_DEVELOPER_NAME dejan de utilizarse. No cambia cuentas existentes: si se creó otro email, se conserva y la seed crea la nueva cuenta con el email fijo.
 
 Las altas posteriores y los cambios de contraseña se realizan con acceso de confianza al servidor/Rails console. No hay recuperación pública de contraseñas internas en esta entrega. Las credenciales de agentes y desarrolladores son independientes, aunque sus emails coincidan. La autenticación interna no incorpora todavía MFA, auditoría de acciones ni una restricción de red: son controles posteriores al alcance actual.
 
@@ -40,3 +40,5 @@ Se verifican login interno, logout, rechazo de credenciales de empresas, sesione
 ## Consultas explícitas de acceso
 
 CompanyAccess expone companies, agents, contacts y conversations. Se elimina scope(model) y la selección por nombres de clases; los métodos devuelven relaciones filtradas, también vacías sin un agente. No cambia rutas, permisos ni datos. Validación del refactor: 48 ejemplos RSpec sin fallos en PostgreSQL temporal y RuboCop de modelo/spec sin infracciones.
+
+Validación de la simplificación de seeds: 3 ejemplos aprobados (alta, contraseña requerida y repetición sin reset) en PostgreSQL temporal. RuboCop de seeds y spec sin infracciones.
