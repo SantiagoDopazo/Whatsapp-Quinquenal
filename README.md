@@ -1,24 +1,17 @@
-# Whatsapp-Quinquenal
+# WhatsApp — La Quinquenal
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Backend Rails y PostgreSQL para una bandeja compartida de WhatsApp. El primer cliente será La Quinquenal, con cinco números y varios operarios. La integración real con WhatsApp y el frontend de atención se desarrollan por entregas.
 
-Things you may want to cover:
+## Panel interno y BO de empresas
 
-* Ruby version
+Avo es exclusivo de los desarrolladores del sistema. Su propósito es administrar flags, configuración del backend y configuración de cada frontend/empresa. El acceso usa cuentas Developer independientes de los agentes; ser administrador de una empresa no permite entrar a Avo.
 
-* System dependencies
+Las empresas tendrán su propio frontend BO y usarán la API como Agent, con aislamiento por empresa y permisos por número. La configuración que reciba cada frontend debe limitarse a los valores autorizados de su empresa, sin secretos del backend.
 
-* Configuration
+La separación de identidades y el acceso interno están implementados. Los flags, sus pantallas de configuración y el frontend BO todavía no están implementados.
 
-* Database creation
+## Documentación
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- [Acceso interno, API por empresa y alta de desarrolladores](docs/company-authorization.md).
+- [Entorno de pruebas y comprobaciones de CI](docs/test-environment.md).
+- [Base de empresas y migración](docs/company-foundation.md).
