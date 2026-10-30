@@ -65,6 +65,7 @@ RSpec.describe "Company authorization", type: :request do
   end
 
   it "allows an administrator to update its own conversation" do
+    PhoneNumberAccess.create!(agent: coworker, phone_number: conversation.phone_number)
     patch "/avo/resources/conversations/#{conversation.id}", params: { conversation: { agent_id: coworker.id } }
     expect(response).to have_http_status(:redirect)
     expect(conversation.reload.agent).to eq(coworker)
