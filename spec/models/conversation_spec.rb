@@ -34,7 +34,7 @@ RSpec.describe Conversation, type: :model do
   end
 
   describe "status" do
-    let(:conversation) { create(:conversation) }
+    let_it_be(:conversation) { create(:conversation) }
 
     it "defaults to open" do
       expect(conversation.status).to eq("open")
@@ -42,11 +42,10 @@ RSpec.describe Conversation, type: :model do
   end
 
   describe ".unassigned" do
-    let!(:unassigned_conversation) { create(:conversation, agent: nil) }
-    let!(:assigned_conversation) do
-      contact = create(:contact)
-      create(:conversation, contact: contact, agent: create(:agent, company: contact.company))
-    end
+    let_it_be(:contact) { create(:contact) }
+    let_it_be(:agent) { create(:agent, company: contact.company) }
+    let_it_be(:unassigned_conversation) { create(:conversation, contact: contact, agent: nil) }
+    let_it_be(:assigned_conversation) { create(:conversation, contact: contact, agent: agent) }
 
     it "returns only conversations without an agent" do
       expect(described_class.unassigned).to contain_exactly(unassigned_conversation)
@@ -54,17 +53,17 @@ RSpec.describe Conversation, type: :model do
   end
 
   describe "record lifecycle" do
-    it "requires a contact" do
-      conversation = build(:conversation, contact: nil)
+    let_it_be(:agent, refind: true) { create(:agent) }
+    let_it_be(:contact, refind: true) { create(:contact, company: agent.company) }
+    let_it_be(:conversation, refind: true) { create(:conversation, contact: contact, agent: agent) }
+    let(:conversation_without_contact) { build(:conversation, contact: nil) }
 
-      expect(conversation).not_to be_valid
-      expect(conversation.errors[:contact]).to be_present
+    it "requires a contact" do
+      expect(conversation_without_contact).not_to be_valid
+      expect(conversation_without_contact.errors[:contact]).to be_present
     end
 
     it "preserves the conversation when its assigned agent is deleted" do
-      agent = create(:agent)
-      conversation = create(:conversation, contact: create(:contact, company: agent.company), agent: agent)
-
       agent.destroy!
 
       expect(conversation.reload.agent_id).to be_nil
@@ -72,15 +71,11 @@ RSpec.describe Conversation, type: :model do
     end
 
     it "removes conversations when their contact is deleted" do
-      conversation = create(:conversation)
-
       expect { conversation.contact.destroy! }
         .to change { described_class.exists?(conversation.id) }.from(true).to(false)
     end
 
     it "persists closing and reopening a conversation" do
-      conversation = create(:conversation)
-
       conversation.closed!
       expect(conversation.reload).to be_closed
 

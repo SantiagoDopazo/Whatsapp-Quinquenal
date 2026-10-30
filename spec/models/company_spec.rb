@@ -1,28 +1,36 @@
 require "rails_helper"
 
 RSpec.describe Company, type: :model do
+  let(:company_without_name) { build(:company, name: " ") }
+
   it "requires a name" do
-    expect(build(:company, name: " ")).not_to be_valid
+    expect(company_without_name).not_to be_valid
   end
 
-  it "does not delete a company with contacts" do
-    contact = create(:contact)
+  context "with contacts" do
+    let_it_be(:contact, refind: true) { create(:contact) }
 
-    expect(contact.company.destroy).to be(false)
-    expect(contact.reload).to be_persisted
+    it "does not delete the company" do
+      expect(contact.company.destroy).to be(false)
+      expect(contact.reload).to be_persisted
+    end
   end
 
-  it "does not delete a company with agents" do
-    agent = create(:agent)
+  context "with agents" do
+    let_it_be(:agent, refind: true) { create(:agent) }
 
-    expect(agent.company.destroy).to be(false)
-    expect(agent.reload).to be_persisted
+    it "does not delete the company" do
+      expect(agent.company.destroy).to be(false)
+      expect(agent.reload).to be_persisted
+    end
   end
 
-  it "returns only conversations belonging to its contacts" do
-    conversation = create(:conversation)
-    create(:conversation)
+  context "with conversations in different companies" do
+    let_it_be(:conversation) { create(:conversation) }
+    let_it_be(:other_conversation) { create(:conversation) }
 
-    expect(conversation.company.conversations).to contain_exactly(conversation)
+    it "returns only conversations belonging to its contacts" do
+      expect(conversation.company.conversations).to contain_exactly(conversation)
+    end
   end
 end
