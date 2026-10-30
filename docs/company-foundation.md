@@ -6,9 +6,9 @@ Un whatsapp_id puede repetirse entre empresas, pero no dentro de una misma empre
 
 ## Migración
 
-`bundle exec rails db:migrate` crea La Quinquenal y le asigna todos los agentes y contactos existentes, conservando sus IDs y las conversaciones. Este backfill supone que los datos anteriores pertenecen a una sola empresa. La migración es transaccional y no ofrece rollback: una reversión descartaría pertenencias y podría chocar con teléfonos repetidos entre empresas. Antes de aplicarla a datos reales, realizar y verificar un backup; para volver al estado previo, restaurar el backup junto con la versión anterior del código.
+La aplicación todavía no llegó a producción. La migración usa `change` y modifica solo estructura: crea empresas, referencias obligatorias e índice de contactos por empresa. No crea empresas ni reasigna datos. La Quinquenal y el administrador se crean mediante `db:seed`.
 
-El esquema fue generado ejecutando la migración contra una instancia temporal de PostgreSQL 17. La prueba de migración construye el esquema anterior con datos y verifica la conservación de relaciones y estados.
+La prueba construye el esquema anterior vacío y verifica migración y rollback, incluida la restauración del índice único global. Si una base local tiene agentes o contactos anteriores, habrá que decidir qué hacer con esos datos antes de aplicar referencias obligatorias; este cambio no borra ni reinicia bases existentes. Revertir el índice global sobre datos con teléfonos repetidos entre empresas requiere resolver esas duplicaciones primero.
 
 ## Administración y seeds
 
@@ -20,7 +20,8 @@ Este PR establece pertenencia e integridad a nivel de modelos y claves foráneas
 
 ## Validación
 
-- 23 ejemplos RSpec aprobados en PostgreSQL temporal, incluyendo preservación de datos en la migración y unicidad respaldada por base de datos.
+- 24 ejemplos RSpec aprobados en orden aleatorio (seed 391) en PostgreSQL temporal, incluyendo migración/rollback de estructura y unicidad respaldada por base de datos.
+- TestProf habilita `let_it_be`: los specs usan fixtures persistidos y `refind: true` cuando hay mutaciones, y `let` para valores por ejemplo, sin `let!`, variables locales ni métodos auxiliares.
 - RuboCop sin infracciones en los 20 archivos Ruby revisados.
 - Seeds ejecutados dos veces sin errores ni duplicación del administrador.
 - La instancia habitual de PostgreSQL en el puerto 5432 sigue cerrando conexiones; no se modificó su configuración.

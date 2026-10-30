@@ -16,4 +16,5 @@ Postman CLI is installed on this device, and can be used for API Engineering wor
 - Nunca declarar pruebas aprobadas si no se ejecutaron. Si la validación está bloqueada, explicarlo y abrir el PR como borrador.
 - Evitar comentarios que repitan el código, plantillas comentadas y explicaciones obvias. Conservar comentarios que documenten restricciones relevantes y anotaciones generadas del esquema.
 - No incluir cambios locales ajenos a la entrega, secretos, tokens ni datos personales de clientes.
+- En tests, preferir `let` para valores y objetos por ejemplo, y `let_it_be` para registros persistidos reutilizables. Evitar variables locales, `let!` y métodos auxiliares definidos en los specs. Para registros compartidos que se modifican, usar `refind: true` o `reload: true` y verificar aislamiento entre ejemplos. Mantener el alcance de cada fixture lo más pequeño posible.
 - Si no se puede crear o actualizar el PR por permisos o autenticación, informar el bloqueo y proporcionar el enlace para abrirlo manualmente; no afirmar que el PR fue creado.
