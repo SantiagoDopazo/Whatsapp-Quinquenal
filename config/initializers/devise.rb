@@ -318,7 +318,7 @@ Devise.setup do |config|
 
   # ==> Configuration for devise-jwt
   config.jwt do |jwt|
-    jwt.secret = Rails.application.credentials.secret_key_base
+    jwt.secret = Rails.application.secret_key_base
     jwt.expiration_time = 1.day.to_i
     # Only issue/revoke a JWT for the :agent scope. `nil` matches plain requests with
     # no format extension (e.g. POST /agents/sign_in, what a real JSON client sends);

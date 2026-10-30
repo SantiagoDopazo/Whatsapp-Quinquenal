@@ -1,4 +1,4 @@
-class Avo::Resources::Message < Avo::Resources::CompanyResource
+class Avo::Resources::Message < Avo::BaseResource
   self.record_selector = false
 
   def render_show_controls
