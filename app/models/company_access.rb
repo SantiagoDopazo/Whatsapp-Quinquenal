@@ -3,15 +3,25 @@ class CompanyAccess
     @agent = agent
   end
 
-  def scope(model)
-    return model.none unless @agent
+  def companies
+    return Company.none unless @agent
 
-    case model.name
-    when "Company" then model.where(id: @agent.company_id)
-    when "Agent", "Contact" then model.where(company_id: @agent.company_id)
-    when "Conversation" then model.where(contact_id: @agent.company.contacts.select(:id))
-    else
-      raise ArgumentError, "No company scope for #{model.name}"
-    end
+    Company.where(id: @agent.company_id)
+  end
+
+  def agents
+    return Agent.none unless @agent
+
+    @agent.company.agents
+  end
+
+  def contacts
+    return Contact.none unless @agent
+
+    @agent.company.contacts
+  end
+
+  def conversations
+    Conversation.where(contact_id: contacts.select(:id))
   end
 end
