@@ -17,6 +17,10 @@ El secreto JWT usa Rails.application.secret_key_base, respetando la resolución 
 
 ## Panel interno
 
+Avo es la consola interna de los desarrolladores para administrar flags de funcionalidades, configuración del backend y configuración de cada frontend/empresa. La configuración global del sistema y la específica de una empresa deben distinguirse explícitamente al modelarlas. El frontend de clientes consume únicamente la configuración autorizada de su empresa a través de la API; nunca accede a Avo ni recibe secretos del backend.
+
+Esta entrega implementa la separación de identidades y el acceso al panel. Los modelos y pantallas de flags/configuración se incorporarán cuando se definan sus claves, valores y alcance; todavía no están implementados. Avo no es la bandeja operativa de atención de las empresas: esa interfaz BO será independiente.
+
 Avo autentica current_developer y permite aprovisionar empresas, crear agentes/contactos eligiendo una empresa explícita y administrar registros de diferentes empresas. No se asigna una empresa a partir del desarrollador, que no pertenece a ninguna. Las validaciones de integridad de modelos siguen rechazando pertenencias o referencias cruzadas inconsistentes.
 
 El formulario identifica el acceso como interno, protege contra CSRF y renueva la sesión al autenticar. DELETE /logout cierra la sesión Developer. Un visitante sin sesión va a /login. No se agregan usuarios internos por defecto ni se convierten agentes existentes.
