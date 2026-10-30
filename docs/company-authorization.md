@@ -6,7 +6,7 @@ Depende del PR 03 de empresas y del PR de soporte de pruebas #40. La empresa sie
 
 Avo es administración y requiere rol admin. Los operarios reciben 403, incluida cualquier petición manipulada para promover su propio rol. La futura bandeja de atención tendrá su propia interfaz y permisos. Cada recurso limita tanto query_scope como find_scope mediante CompanyAccess: listados, detalle, edición, borrado y selectores comparten el mismo ámbito. Sin usuario, el ámbito está vacío.
 
-Al crear operarios y contactos desde Avo, la empresa se asigna desde la sesión. Una referencia de empresa, contacto o agente ajena se rechaza antes de guardar. La empresa propia puede editarse, pero no se pueden crear ni eliminar empresas desde el BO. El alta de empresas sigue siendo una operación de aprovisionamiento fuera del BO.
+Al crear operarios y contactos desde Avo, la empresa se asigna desde la sesión. Una referencia de empresa, contacto o agente ajena se rechaza antes de guardar con 422 en el formulario (Avo 4.3); buscar un registro ajeno por URL devuelve 404. La empresa propia puede editarse, pero no se pueden crear ni eliminar empresas desde el BO. El alta de empresas sigue siendo una operación de aprovisionamiento fuera del BO.
 
 No agrega migraciones ni modifica datos existentes. Las validaciones de integridad del PR 03 siguen vigentes para escrituras de modelos; no se incorpora seguridad de filas de PostgreSQL.
 

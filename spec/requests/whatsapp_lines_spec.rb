@@ -27,7 +27,7 @@ RSpec.describe "WhatsApp line administration", type: :request do
     expect {
       post "/avo/resources/phone_number_accesses", params: { phone_number_access: { agent_id: operator.id, phone_number_id: foreign_number.id } }
     }.not_to change(PhoneNumberAccess, :count)
-    expect(response).to have_http_status(:not_found)
+    expect(response).to have_http_status(:unprocessable_content)
   end
 
   it "allows an administrator to grant and revoke a company line" do
