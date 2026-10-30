@@ -20,7 +20,11 @@ Avo.configure do |config|
   ## == Authentication ==
   config.current_user_method = :current_agent
   config.authenticate_with do
-    redirect_to "/login" unless current_agent
+    if current_agent.nil?
+      redirect_to "/login"
+    elsif current_agent.role != "admin"
+      head :forbidden
+    end
   end
 
   ## == Authorization ==

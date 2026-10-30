@@ -1,4 +1,4 @@
-class Avo::Resources::Agent < Avo::BaseResource
+class Avo::Resources::Agent < Avo::Resources::CompanyResource
   # self.icon = "tabler/outline/users"
   # self.avatar = {
   #   source: :avatar

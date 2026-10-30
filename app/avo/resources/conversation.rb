@@ -1,4 +1,4 @@
-class Avo::Resources::Conversation < Avo::BaseResource
+class Avo::Resources::Conversation < Avo::Resources::CompanyResource
   #   source: :avatar
   #   query: -> { query.ransack(id_eq: q, m: "or").result(distinct: false) }
 
