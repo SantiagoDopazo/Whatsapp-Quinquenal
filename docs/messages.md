@@ -18,10 +18,10 @@ La creación de un mensaje actualiza last_activity_at de la conversación dentro
 
 ## Acceso y conservación
 
-CompanyAccess restringe mensajes a conversaciones de la empresa y números autorizados. Avo expone el historial solo para consulta de administradores; rechaza creación, edición y borrado y oculta esos controles. No se pueden eliminar conversaciones con mensajes mediante los modelos. La baja de un contacto con historial también requiere resolver esa conservación previamente.
+CompanyAccess restringe el ámbito de la API/futuro BO a conversaciones de la empresa y números autorizados. Avo es interno: solo Developer puede consultar el historial entre empresas. Los agentes y administradores de empresas no tienen acceso al panel. Se rechaza creación, edición y borrado de mensajes y se ocultan esos controles incluso para desarrolladores. No se pueden eliminar conversaciones con mensajes mediante los modelos. La baja de un contacto con historial también requiere resolver esa conservación previamente.
 
 La migración agrega messages, índices, restricciones de contenido/estado y claves foráneas. No modifica conversaciones existentes ni envía datos. El rollback elimina los mensajes; exportar el historial antes de revertir una base utilizada.
 
 ## Validación
 
-81 ejemplos RSpec aprobados (seed 28819) en PostgreSQL temporal: integridad compuesta, unicidad respaldada por DB, autores y permisos, estados y resultados inciertos, actualización/rollback de actividad, administración de solo lectura y migración/rollback. Revisión visual manual pendiente. Sin prueba real ni simulación del proveedor: todavía no hay cliente HTTP ni webhook.
+90 ejemplos RSpec aprobados (seed 6241) con PostgreSQL temporal tras separar Avo interno de las cuentas de empresa: integridad compuesta, unicidad respaldada por DB, autores y permisos, estados y resultados inciertos, actualización/rollback de actividad, administración interna de solo lectura y migración/rollback. Revisión visual manual pendiente. Sin prueba real ni simulación del proveedor: todavía no hay cliente HTTP ni webhook.
