@@ -14,7 +14,8 @@
 #  index_contacts_on_whatsapp_id  (whatsapp_id) UNIQUE
 #
 class Contact < ApplicationRecord
+  include CompanyOwned
   has_many :conversations, dependent: :destroy
 
-  validates :whatsapp_id, presence: true, uniqueness: true
+  validates :whatsapp_id, presence: true, uniqueness: { scope: :company_id }
 end

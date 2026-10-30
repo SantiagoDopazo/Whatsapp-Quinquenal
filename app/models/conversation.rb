@@ -24,7 +24,19 @@ class Conversation < ApplicationRecord
   belongs_to :contact
   belongs_to :agent, optional: true
 
+  delegate :company, to: :contact, allow_nil: true
+
+  validate :agent_belongs_to_contact_company
+
   enum :status, { open: 0, pending: 1, closed: 2 }, default: :open
 
   scope :unassigned, -> { where(agent_id: nil) }
+
+  private
+
+  def agent_belongs_to_contact_company
+    if agent && contact && agent.company != contact.company
+      errors.add(:agent, "must belong to the contact's company")
+    end
+  end
 end
