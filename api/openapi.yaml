@@ -1,0 +1,120 @@
+openapi: 3.1.0
+info:
+  title: La Quinquenal — integración de WhatsApp
+  version: 0.1.0
+  description: >-
+    Contrato de la recepción prevista en PR 08. Estas rutas todavía no están
+    implementadas en PR 07. La confirmación acredita recepción durable, no
+    procesamiento de mensajes ni entrega de respuestas al cliente.
+servers:
+  - url: http://localhost:3000
+paths:
+  /webhooks/whatsapp:
+    get:
+      operationId: verifyWhatsappWebhook
+      summary: Verificar la suscripción de Meta
+      x-implementation-status: planned-pr-08
+      security: []
+      parameters:
+        - name: hub.mode
+          in: query
+          required: true
+          schema: {type: string, const: subscribe}
+        - name: hub.verify_token
+          in: query
+          required: true
+          schema: {type: string, minLength: 1}
+        - name: hub.challenge
+          in: query
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 1024}
+      responses:
+        '200':
+          description: Token válido; cuerpo igual a hub.challenge, sin JSON ni comillas.
+          content:
+            text/plain:
+              schema: {type: string}
+        '401': {description: 'Token ausente o inválido, o modo distinto de subscribe.'}
+        '400': {description: Challenge ausente o demasiado largo.}
+        '503': {description: Configuración de verificación ausente.}
+    post:
+      operationId: receiveWhatsappWebhook
+      summary: Recibir eventos firmados y almacenarlos antes de confirmarlos
+      x-implementation-status: planned-pr-08
+      description: >-
+        Validar HMAC-SHA256 de los bytes originales con el secreto de la app.
+        Resolver WABA y número desde configuración registrada, sin aceptar un
+        company_id de entrada. Límite local de cuerpo: 1048576 bytes. Todo el
+        lote debe poder resolverse antes de aceptarlo. No requiere JWT de agente.
+      security:
+        - MetaSignature: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WhatsappEvent'}
+            examples:
+              text: {externalValue: ./examples/whatsapp-inbound-text.json}
+              status: {externalValue: ./examples/whatsapp-delivery-status.json}
+      responses:
+        '200':
+          description: Evento guardado y trabajo encolado, o repetición durable reconocida.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [received]
+                properties:
+                  received: {type: boolean, const: true}
+                additionalProperties: false
+        '400': {description: JSON o estructura del evento inválidos.}
+        '401': {description: Firma ausente o inválida.}
+        '413': {description: Cuerpo supera el límite local.}
+        '422': {description: Cuenta/número no registrado o referencia de origen inconsistente.}
+        '503': {description: Configuración ausente o fallo al persistir/encolar; no confirmado como éxito.}
+components:
+  securitySchemes:
+    MetaSignature:
+      type: apiKey
+      in: header
+      name: X-Hub-Signature-256
+      description: sha256= seguido de 64 caracteres hexadecimales del HMAC del cuerpo original.
+  schemas:
+    WhatsappEvent:
+      type: object
+      required: [object, entry]
+      properties:
+        object: {type: string, const: whatsapp_business_account}
+        entry:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [id, changes]
+            properties:
+              id: {type: string, minLength: 1}
+              changes:
+                type: array
+                minItems: 1
+                items:
+                  type: object
+                  required: [field, value]
+                  properties:
+                    field: {type: string, const: messages}
+                    value:
+                      type: object
+                      required: [messaging_product, metadata]
+                      properties:
+                        messaging_product: {type: string, const: whatsapp}
+                        metadata:
+                          type: object
+                          required: [phone_number_id]
+                          properties:
+                            phone_number_id: {type: string, minLength: 1}
+                            display_phone_number: {type: string}
+                        messages:
+                          type: array
+                          items: {type: object}
+                        statuses:
+                          type: array
+                          items: {type: object}
