@@ -11,6 +11,7 @@ class Avo::Resources::Contact < Avo::BaseResource
 
   def fields
     field :id, as: :id
+    field :company, as: :belongs_to, required: true
     # field :avatar, as: :avatar
     field :whatsapp_id, as: :text
     field :name, as: :text
