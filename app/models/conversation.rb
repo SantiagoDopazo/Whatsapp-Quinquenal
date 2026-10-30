@@ -24,6 +24,7 @@ class Conversation < ApplicationRecord
   belongs_to :contact
   belongs_to :agent, optional: true
   belongs_to :phone_number, optional: true
+  has_many :messages, dependent: :restrict_with_error
 
   delegate :company, to: :contact, allow_nil: true
 

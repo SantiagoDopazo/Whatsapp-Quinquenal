@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_30_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_30_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_220000) do
     t.index ["agent_id"], name: "index_conversations_on_agent_id"
     t.index ["contact_id", "phone_number_id"], name: "index_conversations_on_active_contact_line", unique: true, where: "((phone_number_id IS NOT NULL) AND (status = ANY (ARRAY[0, 1])))"
     t.index ["contact_id"], name: "index_conversations_on_contact_id"
+    t.index ["id", "phone_number_id"], name: "index_conversations_on_id_and_phone_number_id", unique: true
     t.index ["phone_number_id"], name: "index_conversations_on_phone_number_id"
   end
 
@@ -69,6 +70,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_220000) do
     t.string "jti"
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.bigint "agent_id"
+    t.text "body"
+    t.string "client_request_id"
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.string "direction", null: false
+    t.string "external_id"
+    t.string "message_type", default: "text", null: false
+    t.datetime "occurred_at", null: false
+    t.bigint "phone_number_id", null: false
+    t.string "status", null: false
+    t.datetime "status_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_id"], name: "index_messages_on_agent_id"
+    t.index ["conversation_id", "occurred_at", "id"], name: "index_messages_on_conversation_id_and_occurred_at_and_id"
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["phone_number_id", "client_request_id"], name: "index_messages_on_phone_number_id_and_client_request_id", unique: true, where: "(client_request_id IS NOT NULL)"
+    t.index ["phone_number_id", "external_id"], name: "index_messages_on_phone_number_id_and_external_id", unique: true, where: "(external_id IS NOT NULL)"
+    t.index ["phone_number_id"], name: "index_messages_on_phone_number_id"
+    t.check_constraint "direction::text = 'inbound'::text AND status::text = 'received'::text AND external_id IS NOT NULL OR direction::text = 'outbound'::text AND (status::text = ANY (ARRAY['queued'::character varying, 'sending'::character varying, 'accepted'::character varying, 'sent'::character varying, 'delivered'::character varying, 'read'::character varying, 'failed'::character varying, 'unknown'::character varying]::text[])) AND client_request_id IS NOT NULL", name: "messages_valid_direction_state"
+    t.check_constraint "direction::text = ANY (ARRAY['inbound'::character varying, 'outbound'::character varying]::text[])", name: "messages_valid_direction"
+    t.check_constraint "message_type::text = 'text'::text AND body IS NOT NULL AND length(TRIM(BOTH FROM body)) > 0 OR message_type::text = 'unsupported'::text AND direction::text = 'inbound'::text", name: "messages_valid_content"
+    t.check_constraint "message_type::text = ANY (ARRAY['text'::character varying, 'unsupported'::character varying]::text[])", name: "messages_valid_type"
   end
 
   create_table "phone_number_accesses", force: :cascade do |t|
@@ -111,6 +138,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_220000) do
   add_foreign_key "conversations", "agents"
   add_foreign_key "conversations", "contacts"
   add_foreign_key "conversations", "phone_numbers"
+  add_foreign_key "messages", "agents", on_delete: :nullify
+  add_foreign_key "messages", "conversations", column: ["conversation_id", "phone_number_id"], primary_key: ["id", "phone_number_id"]
+  add_foreign_key "messages", "phone_numbers"
   add_foreign_key "phone_number_accesses", "agents"
   add_foreign_key "phone_number_accesses", "phone_numbers"
   add_foreign_key "phone_numbers", "whatsapp_accounts"

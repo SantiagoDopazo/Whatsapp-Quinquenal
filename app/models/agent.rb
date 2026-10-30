@@ -32,6 +32,7 @@ class Agent < ApplicationRecord
   has_many :conversations, dependent: :nullify
   has_many :phone_number_accesses, dependent: :destroy
   has_many :phone_numbers, through: :phone_number_accesses
+  has_many :messages, dependent: :nullify
 
   validates :name, presence: true
   validates :role, inclusion: { in: ROLES }
