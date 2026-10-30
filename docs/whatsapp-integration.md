@@ -42,3 +42,7 @@ No se asume importación de historial ni coexistencia con el celular. El alta, m
 ## Validación
 
 95 ejemplos RSpec aprobados (seed 6241) tras separar Avo interno de las cuentas de empresa, incluidas pruebas de configuración ausente, versión inválida, URL fija e inspección sin secretos. RuboCop sin infracciones en los dos archivos Ruby nuevos. El contrato se verificó con `postman spec lint api/openapi.yaml --no-report-events --issueType syntax`: sin incidencias. No publica ni crea recursos en Postman. No hay prueba real de Meta ni secretos comprometidos.
+
+## Refactor heredado de acceso
+
+CompanyAccess expone consultas explícitas en lugar de scope(model). No cambia el contrato de WhatsApp ni resuelve las verificaciones pendientes de Meta. Validación sobre esta rama: 100 ejemplos RSpec sin fallos con PostgreSQL temporal; RuboCop de los cuatro archivos Ruby del refactor sin infracciones.
