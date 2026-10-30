@@ -21,3 +21,7 @@ La obligatoriedad para nuevas conversaciones se aplica en Active Record. La colu
 - Dos líneas para un contacto, unicidad de chat activo, asignación autorizada, revocación, referencias cruzadas e inmutabilidad.
 - Requests de Avo con login Developer: alta de cuenta con empresa explícita, listados entre empresas y alta/baja de permisos sin referencias inconsistentes.
 - RuboCop sin infracciones en 41 archivos revisados. Revisión visual manual del BO pendiente; sin llamadas a Meta.
+
+## Refactor de consultas de acceso
+
+CompanyAccess usa métodos explícitos whatsapp_accounts, phone_numbers, phone_number_accesses y conversations en lugar de scope(model). Se conservan permisos por línea y el acceso de administradores a conversaciones anteriores. Sin migraciones. Validación: suite de 69 ejemplos y luego 21 ejemplos de acceso/líneas con cobertura adicional, todos sin fallos; RuboCop de los tres archivos modificados sin infracciones.
