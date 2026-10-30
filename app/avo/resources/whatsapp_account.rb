@@ -1,4 +1,4 @@
-class Avo::Resources::WhatsappAccount < Avo::Resources::CompanyResource
+class Avo::Resources::WhatsappAccount < Avo::BaseResource
   def fields
     field :id, as: :id
     field :company, as: :belongs_to, required: true

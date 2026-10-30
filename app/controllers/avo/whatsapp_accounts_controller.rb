@@ -1,2 +1,2 @@
-class Avo::WhatsappAccountsController < Avo::CompanyResourcesController
+class Avo::WhatsappAccountsController < Avo::ResourcesController
 end
