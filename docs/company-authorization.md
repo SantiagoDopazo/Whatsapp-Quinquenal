@@ -27,7 +27,7 @@ El formulario identifica el acceso como interno, protege contra CSRF y renueva l
 
 ## Alta inicial y recuperación de acceso
 
-Ejecutar `bundle exec rails db:seed` crea `developer@quinquenal.test`, con nombre Desarrollador y contraseña inicial tomada de SEED_DEVELOPER_PASSWORD mediante ENV.fetch. La variable es obligatoria al crear la cuenta; si falta, la seed falla. Repetir las seeds no duplica la cuenta ni cambia su contraseña. SEED_DEVELOPER_EMAIL y SEED_DEVELOPER_NAME dejan de utilizarse. No cambia cuentas existentes: si se creó otro email, se conserva y la seed crea la nueva cuenta con el email fijo.
+Ejecutar `bundle exec rails db:seed` sobre una base limpia crea el usuario de ejemplo dev@example.com, nombre Desarrollador y contraseña password123. El alta usa Developer.create! con valores fijos; no utiliza variables SEED_DEVELOPER_*. No comprueba existencia ni conserva idempotencia: repetir sobre una cuenta existente falla por email duplicado.
 
 Las altas posteriores y los cambios de contraseña se realizan con acceso de confianza al servidor/Rails console. No hay recuperación pública de contraseñas internas en esta entrega. Las credenciales de agentes y desarrolladores son independientes, aunque sus emails coincidan. La autenticación interna no incorpora todavía MFA, auditoría de acciones ni una restricción de red: son controles posteriores al alcance actual.
 
@@ -41,4 +41,6 @@ Se verifican login interno, logout, rechazo de credenciales de empresas, sesione
 
 CompanyAccess expone companies, agents, contacts y conversations. Se elimina scope(model) y la selección por nombres de clases; los métodos devuelven relaciones filtradas, también vacías sin un agente. No cambia rutas, permisos ni datos. Validación del refactor: 48 ejemplos RSpec sin fallos en PostgreSQL temporal y RuboCop de modelo/spec sin infracciones.
 
-Validación de la simplificación de seeds: 3 ejemplos aprobados (alta, contraseña requerida y repetición sin reset) en PostgreSQL temporal. RuboCop de seeds y spec sin infracciones.
+Validación de seeds fijas: ejemplo de alta en PostgreSQL temporal y RuboCop de seeds/spec.
+
+Las seeds crean empresa, agente y desarrollador directamente con datos fijos. Para volver a cargarlas, recrear la base mediante rails db:drop db:create db:migrate db:seed. Ese comando elimina los datos anteriores; db:seed por sí solo no limpia la base.
