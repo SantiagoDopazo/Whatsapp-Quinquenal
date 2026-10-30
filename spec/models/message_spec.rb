@@ -161,9 +161,9 @@ RSpec.describe Message, type: :model do
 
   it "limits messages by company and authorized line" do
     inbound.save!
-    expect(CompanyAccess.new(operator).scope(described_class)).to be_empty
+    expect(CompanyAccess.new(operator).messages).to be_empty
     PhoneNumberAccess.create!(agent: operator, phone_number: conversation.phone_number)
-    expect(CompanyAccess.new(operator).scope(described_class)).to contain_exactly(inbound)
-    expect(CompanyAccess.new(nil).scope(described_class)).to be_empty
+    expect(CompanyAccess.new(operator).messages).to contain_exactly(inbound)
+    expect(CompanyAccess.new(nil).messages).to be_empty
   end
 end

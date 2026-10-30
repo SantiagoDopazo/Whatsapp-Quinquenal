@@ -42,24 +42,24 @@ RSpec.describe "WhatsApp lines", type: :model do
 
   it "does not implicitly authorize operators on any company line" do
     expect(operator.accessible_phone_numbers).to be_empty
-    expect(CompanyAccess.new(operator).scope(Conversation)).to be_empty
+    expect(CompanyAccess.new(operator).conversations).to be_empty
     expect(conversation.update(agent: operator)).to be(false)
   end
 
   it "allows only granted lines and applies revocation immediately" do
     grant.save!
     expect(operator.accessible_phone_numbers).to contain_exactly(number)
-    expect(CompanyAccess.new(operator).scope(Conversation)).to contain_exactly(conversation)
+    expect(CompanyAccess.new(operator).conversations).to contain_exactly(conversation)
     expect(conversation.update(agent: operator)).to be(true)
     grant.destroy!
     expect(operator.can_access_phone_number?(number)).to be(false)
-    expect(CompanyAccess.new(operator).scope(Conversation)).to be_empty
+    expect(CompanyAccess.new(operator).conversations).to be_empty
   end
 
   it "allows administrators every line of their own company" do
     expect(admin.accessible_phone_numbers).to contain_exactly(number, second_number)
     expect(conversation.update(agent: admin)).to be(true)
-    expect(CompanyAccess.new(admin).scope(PhoneNumber)).not_to include(foreign_number)
+    expect(CompanyAccess.new(admin).phone_numbers).not_to include(foreign_number)
   end
 
   it "deduplicates grants at database level" do
@@ -100,8 +100,8 @@ RSpec.describe "WhatsApp lines", type: :model do
 
     it "keeps the record editable and visible only to administrators until a line is assigned" do
       expect(legacy.update(status: :pending)).to be(true)
-      expect(CompanyAccess.new(admin).scope(Conversation)).to include(legacy)
-      expect(CompanyAccess.new(operator).scope(Conversation)).not_to include(legacy)
+      expect(CompanyAccess.new(admin).conversations).to include(legacy)
+      expect(CompanyAccess.new(operator).conversations).not_to include(legacy)
     end
 
     it "allows an explicit assignment to a known line" do
