@@ -27,7 +27,7 @@ El formulario identifica el acceso como interno, protege contra CSRF y renueva l
 
 ## Alta inicial y recuperación de acceso
 
-Definir SEED_DEVELOPER_EMAIL y SEED_DEVELOPER_PASSWORD en el entorno de un proceso de confianza y ejecutar `bundle exec rails db:seed`. SEED_DEVELOPER_NAME es opcional. Ambos valores de acceso son obligatorios si se configura uno de ellos; sin ellos no se crea ningún Developer. Los seeds se pueden repetir sin duplicar cuentas ni restablecer contraseñas existentes. No se guardan secretos en Git ni se incluyen valores reales en ejemplos.
+Ejecutar `bundle exec rails db:seed` sobre una base limpia crea el usuario de ejemplo dev@example.com, nombre Desarrollador y contraseña password123. El alta usa Developer.create! con valores fijos; no utiliza variables SEED_DEVELOPER_*. No comprueba existencia ni conserva idempotencia: repetir sobre una cuenta existente falla por email duplicado.
 
 Las altas posteriores y los cambios de contraseña se realizan con acceso de confianza al servidor/Rails console. No hay recuperación pública de contraseñas internas en esta entrega. Las credenciales de agentes y desarrolladores son independientes, aunque sus emails coincidan. La autenticación interna no incorpora todavía MFA, auditoría de acciones ni una restricción de red: son controles posteriores al alcance actual.
 
@@ -36,3 +36,11 @@ Las altas posteriores y los cambios de contraseña se realizan con acceso de con
 La migración agrega developers con nombre, email único y contraseña cifrada por Devise. No modifica agentes, empresas ni contactos ni asigna privilegios a registros existentes. El rollback elimina las identidades internas y su acceso al panel; conserva los datos de las empresas.
 
 Se verifican login interno, logout, rechazo de credenciales de empresas, sesiones separadas, aislamiento de la API con JWT real, integridad de referencias, aprovisionamiento repetible sin contraseña por defecto y migración/rollback. Las pruebas de vistas se ejecutan fuera del sandbox porque sus restricciones de enumeración de rutas absolutas impiden que Rails encuentre templates locales. La revisión visual manual queda pendiente; no hay llamadas a Meta.
+
+## Consultas explícitas de acceso
+
+CompanyAccess expone companies, agents, contacts y conversations. Se elimina scope(model) y la selección por nombres de clases; los métodos devuelven relaciones filtradas, también vacías sin un agente. No cambia rutas, permisos ni datos. Validación del refactor: 48 ejemplos RSpec sin fallos en PostgreSQL temporal y RuboCop de modelo/spec sin infracciones.
+
+Validación de seeds fijas: ejemplo de alta en PostgreSQL temporal y RuboCop de seeds/spec.
+
+Las seeds crean empresa, agente y desarrollador directamente con datos fijos. Para volver a cargarlas, recrear la base mediante rails db:drop db:create db:migrate db:seed. Ese comando elimina los datos anteriores; db:seed por sí solo no limpia la base.
