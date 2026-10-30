@@ -3,20 +3,48 @@ class CompanyAccess
     @agent = agent
   end
 
-  def scope(model)
-    return model.none unless @agent
+  def companies
+    return Company.none unless @agent
 
-    case model.name
-    when "Company" then model.where(id: @agent.company_id)
-    when "Agent", "Contact", "WhatsappAccount" then model.where(company_id: @agent.company_id)
-    when "PhoneNumber" then model.where(id: @agent.accessible_phone_numbers.select(:id))
-    when "PhoneNumberAccess" then model.where(phone_number_id: @agent.accessible_phone_numbers.select(:id))
-    when "Conversation"
-      conversations = model.where(contact_id: @agent.company.contacts.select(:id))
-      @agent.role == "admin" ? conversations : conversations.where(phone_number_id: @agent.accessible_phone_numbers.select(:id))
-    when "Message" then model.where(conversation_id: scope(Conversation).select(:id))
-    else
-      raise ArgumentError, "No company scope for #{model.name}"
-    end
+    Company.where(id: @agent.company_id)
+  end
+
+  def agents
+    return Agent.none unless @agent
+
+    @agent.company.agents
+  end
+
+  def contacts
+    return Contact.none unless @agent
+
+    @agent.company.contacts
+  end
+
+  def whatsapp_accounts
+    return WhatsappAccount.none unless @agent
+
+    @agent.company.whatsapp_accounts
+  end
+
+  def phone_numbers
+    return PhoneNumber.none unless @agent
+
+    @agent.accessible_phone_numbers
+  end
+
+  def phone_number_accesses
+    PhoneNumberAccess.where(phone_number_id: phone_numbers.select(:id))
+  end
+
+  def conversations
+    conversations = Conversation.where(contact_id: contacts.select(:id))
+    return conversations if @agent&.role == "admin"
+
+    conversations.where(phone_number_id: phone_numbers.select(:id))
+  end
+
+  def messages
+    Message.where(conversation_id: conversations.select(:id))
   end
 end
