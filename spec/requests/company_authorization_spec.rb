@@ -46,12 +46,12 @@ RSpec.describe "Company authorization", type: :request do
     expect {
       post "/avo/resources/conversations", params: { conversation: { contact_id: foreign_contact.id } }
     }.not_to change(Conversation, :count)
-    expect(response).to have_http_status(:not_found)
+    expect(response).to have_http_status(:unprocessable_content)
   end
 
   it "rejects foreign agents on an existing conversation" do
     patch "/avo/resources/conversations/#{conversation.id}", params: { conversation: { agent_id: outsider.id } }
-    expect(response).to have_http_status(:not_found)
+    expect(response).to have_http_status(:unprocessable_content)
     expect(conversation.reload.agent).to be_nil
   end
 
@@ -59,7 +59,7 @@ RSpec.describe "Company authorization", type: :request do
     expect {
       post "/avo/resources/contacts", params: { contact: { company_id: outsider.company_id, whatsapp_id: "injected-company" } }
     }.not_to change(Contact, :count)
-    expect(response).to have_http_status(:not_found)
+    expect(response).to have_http_status(:unprocessable_content)
     get "/avo/resources/companies/#{outsider.company_id}"
     expect(response).to have_http_status(:not_found)
   end
