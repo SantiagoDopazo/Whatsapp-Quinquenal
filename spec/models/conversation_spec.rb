@@ -43,7 +43,10 @@ RSpec.describe Conversation, type: :model do
 
   describe ".unassigned" do
     let!(:unassigned_conversation) { create(:conversation, agent: nil) }
-    let!(:assigned_conversation) { create(:conversation, agent: create(:agent)) }
+    let!(:assigned_conversation) do
+      contact = create(:contact)
+      create(:conversation, contact: contact, agent: create(:agent, company: contact.company))
+    end
 
     it "returns only conversations without an agent" do
       expect(described_class.unassigned).to contain_exactly(unassigned_conversation)
@@ -60,7 +63,7 @@ RSpec.describe Conversation, type: :model do
 
     it "preserves the conversation when its assigned agent is deleted" do
       agent = create(:agent)
-      conversation = create(:conversation, agent: agent)
+      conversation = create(:conversation, contact: create(:contact, company: agent.company), agent: agent)
 
       agent.destroy!
 

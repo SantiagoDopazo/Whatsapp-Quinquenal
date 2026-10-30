@@ -22,6 +22,7 @@
 #
 FactoryBot.define do
   factory :agent do
+    company
     sequence(:email) { |n| "agent#{n}@example.com" }
     name { "Test Agent" }
     password { "password123" }
