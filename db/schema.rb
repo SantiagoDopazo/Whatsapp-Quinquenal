@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_205831) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_30_070000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "agents", force: :cascade do |t|
+    t.bigint "company_id", null: false
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -25,18 +26,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_205831) do
     t.string "reset_password_token"
     t.string "role", default: "agent", null: false
     t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_agents_on_company_id"
     t.index ["email"], name: "index_agents_on_email", unique: true
     t.index ["jti"], name: "index_agents_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_agents_on_reset_password_token", unique: true
   end
 
+  create_table "companies", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "contacts", force: :cascade do |t|
+    t.bigint "company_id", null: false
     t.datetime "created_at", null: false
     t.jsonb "metadata", default: {}, null: false
     t.string "name"
     t.datetime "updated_at", null: false
     t.string "whatsapp_id", null: false
-    t.index ["whatsapp_id"], name: "index_contacts_on_whatsapp_id", unique: true
+    t.index ["company_id", "whatsapp_id"], name: "index_contacts_on_company_id_and_whatsapp_id", unique: true
+    t.index ["company_id"], name: "index_contacts_on_company_id"
   end
 
   create_table "conversations", force: :cascade do |t|
@@ -58,6 +68,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_205831) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
   end
 
+  add_foreign_key "agents", "companies"
+  add_foreign_key "contacts", "companies"
   add_foreign_key "conversations", "agents"
   add_foreign_key "conversations", "contacts"
 end

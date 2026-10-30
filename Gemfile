@@ -64,6 +64,7 @@ group :development, :test do
 
   # Testing framework
   gem "rspec-rails"
+  gem "test-prof", "~> 1.6"
 
   # Test data builders, replaces fixtures
   gem "factory_bot_rails"

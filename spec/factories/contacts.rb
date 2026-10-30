@@ -15,6 +15,7 @@
 #
 FactoryBot.define do
   factory :contact do
+    company
     sequence(:whatsapp_id) { |n| "54911000000#{n}" }
     name { "Test Contact" }
   end

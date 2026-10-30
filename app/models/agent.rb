@@ -28,10 +28,18 @@ class Agent < ApplicationRecord
   devise :database_authenticatable, :recoverable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
+  belongs_to :company
   has_many :conversations, dependent: :nullify
 
   validates :name, presence: true
   validates :role, inclusion: { in: ROLES }
+  validate :company_cannot_change, on: :update
 
   before_create { self.jti = SecureRandom.uuid }
+
+  private
+
+  def company_cannot_change
+    errors.add(:company, "cannot be changed") if will_save_change_to_company_id?
+  end
 end

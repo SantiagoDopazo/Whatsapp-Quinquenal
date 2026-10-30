@@ -32,8 +32,8 @@ RSpec.describe Contact, type: :model do
     end
 
     context "with a whatsapp_id already taken" do
-      let(:existing_contact) { create(:contact) }
-      let(:contact) { described_class.new(whatsapp_id: existing_contact.whatsapp_id, name: "Duplicado") }
+      let_it_be(:existing_contact) { create(:contact) }
+      let(:contact) { described_class.new(company: existing_contact.company, whatsapp_id: existing_contact.whatsapp_id, name: "Duplicado") }
 
       before { contact.valid? }
 

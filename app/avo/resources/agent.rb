@@ -11,6 +11,7 @@ class Avo::Resources::Agent < Avo::BaseResource
 
   def fields
     field :id, as: :id
+    field :company, as: :belongs_to, required: true
     field :email, as: :text, required: true
     field :name, as: :text, required: true
     field :role, as: :select, options: Agent::ROLES.index_by(&:itself), required: true
