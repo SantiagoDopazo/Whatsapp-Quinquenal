@@ -162,7 +162,7 @@ GEM
       activesupport (>= 6.1)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    image_processing (2.0.3)
+    image_processing (2.2.0)
     inline_svg (1.10.0)
       activesupport (>= 3.0)
       nokogiri (>= 1.6)
@@ -413,7 +413,7 @@ DEPENDENCIES
   devise
   devise-jwt
   factory_bot_rails
-  image_processing (~> 2.0)
+  image_processing (~> 2.2)
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
