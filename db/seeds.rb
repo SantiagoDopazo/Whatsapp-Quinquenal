@@ -11,16 +11,7 @@ Agent.find_or_create_by!(email: "admin@quinquenal.test") do |agent|
   agent.password = ENV.fetch("SEED_ADMIN_PASSWORD", "password123")
 end
 
-developer_email = ENV["SEED_DEVELOPER_EMAIL"]&.strip&.downcase
-developer_password = ENV["SEED_DEVELOPER_PASSWORD"]
-
-if developer_email.present? || developer_password.present?
-  unless developer_email.present? && developer_password.present?
-    raise ArgumentError, "SEED_DEVELOPER_EMAIL and SEED_DEVELOPER_PASSWORD must both be configured"
-  end
-
-  Developer.find_or_create_by!(email: developer_email) do |developer|
-    developer.name = ENV.fetch("SEED_DEVELOPER_NAME", "Desarrollador")
-    developer.password = developer_password
-  end
+Developer.find_or_create_by!(email: "developer@quinquenal.test") do |developer|
+  developer.name = "Desarrollador"
+  developer.password = ENV.fetch("SEED_DEVELOPER_PASSWORD")
 end
