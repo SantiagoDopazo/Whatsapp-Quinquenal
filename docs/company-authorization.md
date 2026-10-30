@@ -1,13 +1,34 @@
-# Autorización por empresa — PR 04
+# API por empresa y Avo interno — PR 04
 
-Depende del PR 03 de empresas y del PR de soporte de pruebas #40. La empresa siempre se obtiene del usuario autenticado, nunca de un parámetro de selección global. No hay administrador global ni acceso de soporte entre clientes.
+Depende de la base de empresas (PR 03) y del soporte de pruebas #40. Existen dos identidades separadas:
 
-`GET /agents/:id` conserva su respuesta (id, email, name y role), pero busca solo agentes de la empresa del usuario. Un ID ajeno devuelve 404, igual que uno inexistente; sin autenticación devuelve 401. Los operarios pueden consultar compañeros de su empresa.
+| Identidad | Acceso | Ámbito |
+| --- | --- | --- |
+| Agent, roles admin/agent | API autenticada y futuro frontend BO de empresas | Solo su empresa; los permisos por número se agregan en PR 05 |
+| Developer | Login interno /login y Avo | Administración interna de todas las empresas |
 
-Avo es administración y requiere rol admin. Los operarios reciben 403, incluida cualquier petición manipulada para promover su propio rol. La futura bandeja de atención tendrá su propia interfaz y permisos. Cada recurso limita tanto query_scope como find_scope mediante CompanyAccess: listados, detalle, edición, borrado y selectores comparten el mismo ámbito. Sin usuario, el ámbito está vacío.
+El rol admin de Agent no habilita Avo. Una sesión o JWT de agente recibe 403 en el panel interno. Sus credenciales tampoco permiten iniciar sesión en /login. Developer tiene una tabla y un scope Devise independientes, sin company_id, sin JWT, sin registro público ni recurso CRUD para crear desarrolladores. Las cuentas internas se aprovisionan fuera del BO de clientes.
 
-Al crear operarios y contactos desde Avo, la empresa se asigna desde la sesión. Una referencia de empresa, contacto o agente ajena se rechaza antes de guardar con 422 en el formulario (Avo 4.3); buscar un registro ajeno por URL devuelve 404. La empresa propia puede editarse, pero no se pueden crear ni eliminar empresas desde el BO. El alta de empresas sigue siendo una operación de aprovisionamiento fuera del BO.
+## API de las empresas
 
-No agrega migraciones ni modifica datos existentes. Las validaciones de integridad del PR 03 siguen vigentes para escrituras de modelos; no se incorpora seguridad de filas de PostgreSQL.
+`POST /agents/sign_in` mantiene la autenticación de agentes; `GET /agents/:id` devuelve id, email, name y role solo para compañeros de la empresa del usuario. Un ID ajeno devuelve 404, igual que uno inexistente; sin autenticación devuelve 401. CompanyAccess mantiene consultas explícitas para las futuras rutas del BO, sin conceder privilegios internos por el rol admin de una empresa.
 
-Verificación: 35 ejemplos RSpec aprobados (seed 4819), incluidas pruebas HTTP con login real, dos empresas, IDs ajenos, referencias cruzadas y elevación de privilegios. RuboCop sin infracciones en los 13 archivos Ruby de esta entrega. Sin conexión a Meta. La revisión visual manual del BO queda pendiente; las respuestas HTML, formularios y mutaciones se verifican mediante requests.
+El secreto JWT usa Rails.application.secret_key_base, respetando la resolución de Rails por entorno/credenciales. No depende exclusivamente de que pueda descifrarse el archivo de credenciales en el checkout de pruebas. Una sesión interna no inicia sesión como agente ni emite JWT de empresa.
+
+## Panel interno
+
+Avo autentica current_developer y permite aprovisionar empresas, crear agentes/contactos eligiendo una empresa explícita y administrar registros de diferentes empresas. No se asigna una empresa a partir del desarrollador, que no pertenece a ninguna. Las validaciones de integridad de modelos siguen rechazando pertenencias o referencias cruzadas inconsistentes.
+
+El formulario identifica el acceso como interno, protege contra CSRF y renueva la sesión al autenticar. DELETE /logout cierra la sesión Developer. Un visitante sin sesión va a /login. No se agregan usuarios internos por defecto ni se convierten agentes existentes.
+
+## Alta inicial y recuperación de acceso
+
+Definir SEED_DEVELOPER_EMAIL y SEED_DEVELOPER_PASSWORD en el entorno de un proceso de confianza y ejecutar `bundle exec rails db:seed`. SEED_DEVELOPER_NAME es opcional. Ambos valores de acceso son obligatorios si se configura uno de ellos; sin ellos no se crea ningún Developer. Los seeds se pueden repetir sin duplicar cuentas ni restablecer contraseñas existentes. No se guardan secretos en Git ni se incluyen valores reales en ejemplos.
+
+Las altas posteriores y los cambios de contraseña se realizan con acceso de confianza al servidor/Rails console. No hay recuperación pública de contraseñas internas en esta entrega. Las credenciales de agentes y desarrolladores son independientes, aunque sus emails coincidan. La autenticación interna no incorpora todavía MFA, auditoría de acciones ni una restricción de red: son controles posteriores al alcance actual.
+
+## Migración y validación
+
+La migración agrega developers con nombre, email único y contraseña cifrada por Devise. No modifica agentes, empresas ni contactos ni asigna privilegios a registros existentes. El rollback elimina las identidades internas y su acceso al panel; conserva los datos de las empresas.
+
+Se verifican login interno, logout, rechazo de credenciales de empresas, sesiones separadas, aislamiento de la API con JWT real, integridad de referencias, aprovisionamiento repetible sin contraseña por defecto y migración/rollback. Las pruebas de vistas se ejecutan fuera del sandbox porque sus restricciones de enumeración de rutas absolutas impiden que Rails encuentre templates locales. La revisión visual manual queda pendiente; no hay llamadas a Meta.
