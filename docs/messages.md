@@ -25,3 +25,7 @@ La migración agrega messages, índices, restricciones de contenido/estado y cla
 ## Validación
 
 90 ejemplos RSpec aprobados (seed 6241) con PostgreSQL temporal tras separar Avo interno de las cuentas de empresa: integridad compuesta, unicidad respaldada por DB, autores y permisos, estados y resultados inciertos, actualización/rollback de actividad, administración interna de solo lectura y migración/rollback. Revisión visual manual pendiente. Sin prueba real ni simulación del proveedor: todavía no hay cliente HTTP ni webhook.
+
+## Consultas explícitas de acceso
+
+CompanyAccess.messages filtra por las conversaciones autorizadas; se elimina scope(model) sin cambiar permisos ni datos. Los specs conservan las comprobaciones de acceso por línea y sin agente. Validación: 95 ejemplos RSpec sin fallos en PostgreSQL temporal y RuboCop de los cuatro archivos Ruby modificados sin infracciones.
