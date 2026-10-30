@@ -41,4 +41,4 @@ No se asume importación de historial ni coexistencia con el celular. El alta, m
 
 ## Validación
 
-86 ejemplos RSpec aprobados (seed 28819), incluidas pruebas de configuración ausente, versión inválida, URL fija e inspección sin secretos. RuboCop sin infracciones en los dos archivos Ruby nuevos. El contrato se verificó con `postman spec lint api/openapi.yaml --no-report-events --issueType syntax`: sin incidencias. No publica ni crea recursos en Postman. No hay prueba real de Meta ni secretos comprometidos.
+95 ejemplos RSpec aprobados (seed 6241) tras separar Avo interno de las cuentas de empresa, incluidas pruebas de configuración ausente, versión inválida, URL fija e inspección sin secretos. RuboCop sin infracciones en los dos archivos Ruby nuevos. El contrato se verificó con `postman spec lint api/openapi.yaml --no-report-events --issueType syntax`: sin incidencias. No publica ni crea recursos en Postman. No hay prueba real de Meta ni secretos comprometidos.
