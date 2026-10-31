@@ -12,7 +12,7 @@ La prueba construye el esquema anterior vacío y verifica migración y rollback,
 
 ## Administración y seeds
 
-Avo incorpora empresas y permite elegir empresa al crear contactos y operarios. La pertenencia no se puede cambiar una vez guardados. Los seeds se pueden repetir sin duplicar el administrador; `SEED_ADMIN_PASSWORD` permite elegir su contraseña al crearlo, manteniendo el valor de demostración anterior cuando no está configurada. Ejecutar seeds no cambia la contraseña de un administrador existente.
+Avo incorpora empresas y permite elegir empresa al crear contactos y operarios. La pertenencia no se puede cambiar una vez guardados. Las seeds crean la empresa y el administrador directamente con datos de ejemplo fijos, sobre una base limpia. Para cargarlas nuevamente se utiliza `rails db:drop db:create db:migrate db:seed`, que elimina los datos anteriores. SEED_ADMIN_PASSWORD deja de utilizarse.
 
 ## Alcance
 

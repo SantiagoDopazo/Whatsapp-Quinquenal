@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   mount_avo
   devise_for :agents, controllers: { sessions: "agents/sessions" }
+  devise_for :developers, skip: :all
   resources :agents, only: [ :show ]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

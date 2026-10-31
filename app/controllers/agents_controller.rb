@@ -8,6 +8,6 @@ class AgentsController < ApplicationController
   private
 
   def agent
-    Agent.find(params[:id])
+    current_agent.company.agents.find(params[:id])
   end
 end

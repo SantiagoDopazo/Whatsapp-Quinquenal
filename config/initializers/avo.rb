@@ -18,9 +18,15 @@ Avo.configure do |config|
   end
 
   ## == Authentication ==
-  config.current_user_method = :current_agent
+  config.current_user_method = :current_developer
   config.authenticate_with do
-    redirect_to "/login" unless current_agent
+    unless current_developer
+      if current_agent
+        head :forbidden
+      else
+        redirect_to "/login"
+      end
+    end
   end
 
   ## == Authorization ==
