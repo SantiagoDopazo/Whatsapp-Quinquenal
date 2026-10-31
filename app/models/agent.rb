@@ -30,8 +30,6 @@ class Agent < ApplicationRecord
 
   belongs_to :company
   has_many :conversations, dependent: :nullify
-  has_many :phone_number_accesses, dependent: :destroy
-  has_many :phone_numbers, through: :phone_number_accesses
   has_many :messages, dependent: :nullify
 
   validates :name, presence: true
@@ -39,15 +37,6 @@ class Agent < ApplicationRecord
   validate :company_cannot_change, on: :update
 
   before_create { self.jti = SecureRandom.uuid }
-
-  def accessible_phone_numbers
-    role == "admin" ? company.phone_numbers : company.phone_numbers.where(id: phone_numbers.select(:id))
-  end
-
-  def can_access_phone_number?(phone_number)
-    phone_number && company_id == phone_number.company_id &&
-      (role == "admin" || phone_number_accesses.exists?(phone_number_id: phone_number.id))
-  end
 
   private
 
