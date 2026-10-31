@@ -23,19 +23,19 @@
 class Conversation < ApplicationRecord
   belongs_to :contact
   belongs_to :agent, optional: true
-  belongs_to :phone_number, optional: true
+  belongs_to :phone_number
 
   delegate :company, to: :contact, allow_nil: true
 
   validate :agent_belongs_to_contact_company,
     if: -> { agent.present? && contact.present? }
-  validates :phone_number, presence: true, on: :create
   validates :contact_id, uniqueness: {
     scope: :phone_number_id, conditions: -> { where(status: [ :open, :pending ]) }
-  }, if: -> { phone_number_id.present? && !closed? }
+  }, unless: :closed?
   validate :phone_number_belongs_to_contact_company,
     if: -> { phone_number.present? && contact.present? }
-  validate :identity_cannot_change, on: :update
+  validate :contact_cannot_change, on: :update, if: :will_save_change_to_contact_id?
+  validate :phone_number_cannot_change, on: :update, if: :will_save_change_to_phone_number_id?
 
   enum :status, { open: 0, pending: 1, closed: 2 }, default: :open
 
@@ -49,11 +49,12 @@ class Conversation < ApplicationRecord
     end
   end
 
-  def identity_cannot_change
-    errors.add(:contact, "cannot be changed") if will_save_change_to_contact_id?
-    if phone_number_id_in_database.present? && will_save_change_to_phone_number_id?
-      errors.add(:phone_number, "cannot be changed once assigned")
-    end
+  def contact_cannot_change
+    errors.add(:contact, "cannot be changed")
+  end
+
+  def phone_number_cannot_change
+    errors.add(:phone_number, "cannot be changed")
   end
 
   def agent_belongs_to_contact_company
