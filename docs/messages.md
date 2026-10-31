@@ -29,3 +29,5 @@ La migración agrega messages, índices, restricciones de contenido/estado y cla
 ## Consultas explícitas de acceso
 
 Company tiene has_many :messages, through: :conversations. La consulta por empresa rechaza IDs ajenos y comparte los mensajes entre operarios; se conservan las validaciones de autor, contacto y línea de la misma empresa.
+
+Validación del acceso compartido: 86 ejemplos RSpec sin fallos en una base temporal nueva. RuboCop de los once archivos Ruby modificados sin infracciones. Sin conexión a Meta.

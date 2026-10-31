@@ -44,3 +44,5 @@ Se usan current_agent.company.agents, contacts y conversations; desde PR 05 tamb
 Validación de seeds fijas: ejemplo de alta en PostgreSQL temporal y RuboCop de seeds/spec.
 
 Las seeds crean empresa, agente y desarrollador directamente con datos fijos. Para volver a cargarlas, recrear la base mediante rails db:drop db:create db:migrate db:seed. Ese comando elimina los datos anteriores; db:seed por sí solo no limpia la base.
+
+Validación del acceso por asociaciones: 44 ejemplos RSpec sin fallos en PostgreSQL temporal; RuboCop de los archivos Ruby modificados sin infracciones.
