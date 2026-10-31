@@ -36,14 +36,11 @@ class Message < ApplicationRecord
   validate :state_transition_is_valid, on: :update
 
   def record_status!(next_status, at:, external_id: nil)
+    next_status = next_status.to_s
+
     with_lock do
-      if next_status.to_s == status
-        next false
-      end
-      if OUTBOUND_PROGRESS.include?(status) && OUTBOUND_PROGRESS.include?(next_status.to_s) &&
-          OUTBOUND_PROGRESS.index(next_status.to_s) < OUTBOUND_PROGRESS.index(status)
-        next false
-      end
+      next false if next_status == status
+      next false if earlier_status?(next_status)
 
       self.external_id = external_id if external_id.present?
       update!(status: next_status, status_at: [ status_at, at ].max)
@@ -51,6 +48,15 @@ class Message < ApplicationRecord
   end
 
   private
+
+  def earlier_status?(next_status)
+    current_position = OUTBOUND_PROGRESS.index(status)
+    next_position = OUTBOUND_PROGRESS.index(next_status)
+
+    return false unless current_position && next_position
+
+    next_position < current_position
+  end
 
   def set_initial_values
     self.phone_number ||= conversation&.phone_number
