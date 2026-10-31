@@ -45,4 +45,6 @@ No se asume importación de historial ni coexistencia con el celular. El alta, m
 
 ## Refactor heredado de acceso
 
-CompanyAccess expone consultas explícitas en lugar de scope(model). No cambia el contrato de WhatsApp ni resuelve las verificaciones pendientes de Meta. Validación sobre esta rama: 100 ejemplos RSpec sin fallos con PostgreSQL temporal; RuboCop de los cuatro archivos Ruby del refactor sin infracciones.
+El acceso se consulta mediante las asociaciones de current_agent.company, sin permisos individuales por número ni clase de acceso adicional. No cambia el contrato de WhatsApp ni resuelve las verificaciones pendientes de Meta. Validación sobre esta rama: 100 ejemplos RSpec sin fallos con PostgreSQL temporal; RuboCop de los cuatro archivos Ruby del refactor sin infracciones.
+
+Validación del acceso por empresa: 91 ejemplos RSpec sin fallos con PostgreSQL temporal y RuboCop de once archivos Ruby sin infracciones. No valida conexión real a Meta ni resuelve los pendientes de documentación del proveedor.

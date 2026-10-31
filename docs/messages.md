@@ -18,7 +18,7 @@ La creación de un mensaje actualiza last_activity_at de la conversación dentro
 
 ## Acceso y conservación
 
-CompanyAccess restringe el ámbito de la API/futuro BO a conversaciones de la empresa y números autorizados. Avo es interno: solo Developer puede consultar el historial entre empresas. Los agentes y administradores de empresas no tienen acceso al panel. Se rechaza creación, edición y borrado de mensajes y se ocultan esos controles incluso para desarrolladores. No se pueden eliminar conversaciones con mensajes mediante los modelos. La baja de un contacto con historial también requiere resolver esa conservación previamente.
+current_agent.company.messages limita la consulta a la empresa. Todos sus operarios pueden consultar el historial y ser autores de mensajes salientes, sin permisos individuales por número. Avo es interno: solo Developer puede consultar el historial entre empresas. Los agentes y administradores de empresas no tienen acceso al panel. Se rechaza creación, edición y borrado de mensajes y se ocultan esos controles incluso para desarrolladores. No se pueden eliminar conversaciones con mensajes mediante los modelos. La baja de un contacto con historial también requiere resolver esa conservación previamente.
 
 La migración agrega messages, índices, restricciones de contenido/estado y claves foráneas. No modifica conversaciones existentes ni envía datos. El rollback elimina los mensajes; exportar el historial antes de revertir una base utilizada.
 
@@ -28,4 +28,4 @@ La migración agrega messages, índices, restricciones de contenido/estado y cla
 
 ## Consultas explícitas de acceso
 
-CompanyAccess.messages filtra por las conversaciones autorizadas; se elimina scope(model) sin cambiar permisos ni datos. Los specs conservan las comprobaciones de acceso por línea y sin agente. Validación: 95 ejemplos RSpec sin fallos en PostgreSQL temporal y RuboCop de los cuatro archivos Ruby modificados sin infracciones.
+Company tiene has_many :messages, through: :conversations. La consulta por empresa rechaza IDs ajenos y comparte los mensajes entre operarios; se conservan las validaciones de autor, contacto y línea de la misma empresa.
