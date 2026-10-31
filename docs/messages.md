@@ -31,3 +31,9 @@ La migración agrega messages, índices, restricciones de contenido/estado y cla
 Company tiene has_many :messages, through: :conversations. La consulta por empresa rechaza IDs ajenos y comparte los mensajes entre operarios; se conservan las validaciones de autor, contacto y línea de la misma empresa.
 
 Validación del acceso compartido: 86 ejemplos RSpec sin fallos en una base temporal nueva. RuboCop de los once archivos Ruby modificados sin infracciones. Sin conexión a Meta.
+
+## Validaciones explícitas
+
+Las referencias se comprueban por separado: número de la conversación y empresa del autor. Sus condiciones de presencia están en validate. Las reglas por dirección usan inclusion, exclusion y absence de Rails; la protección del identificador externo, la fecha de estado y la transición tienen métodos independientes. Se conserva la regla común de contenido/origen inmutables y los callbacks de valores iniciales y actividad.
+
+Validación del refactor: 25 ejemplos de Message y suite completa de 84 ejemplos sin fallos en PostgreSQL temporal; RuboCop de modelo y spec sin infracciones. Sin cambios de esquema ni de comportamiento esperado.
