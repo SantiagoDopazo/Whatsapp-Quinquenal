@@ -4,7 +4,7 @@ RSpec.describe "Company ownership", type: :model do
   let_it_be(:company) { create(:company) }
   let_it_be(:other_company) { create(:company) }
   let_it_be(:contact, refind: true) { create(:contact, company: company) }
-  let_it_be(:agent, refind: true) { create(:agent, company: company) }
+  let_it_be(:agent, refind: true) { create(:agent, company: company, role: "admin") }
   let(:other_contact) { build(:contact, company: other_company, whatsapp_id: contact.whatsapp_id) }
   let(:duplicate_contact) { build(:contact, company: company, whatsapp_id: contact.whatsapp_id) }
   let(:contact_without_company) { build(:contact, company: nil) }

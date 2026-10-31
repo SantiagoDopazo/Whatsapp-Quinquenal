@@ -23,6 +23,7 @@
 FactoryBot.define do
   factory :conversation do
     contact
+    phone_number { association(:phone_number, company: contact&.company || association(:company)) }
     status { "open" }
     last_activity_at { Time.current }
   end
