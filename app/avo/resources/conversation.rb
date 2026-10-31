@@ -5,6 +5,7 @@ class Avo::Resources::Conversation < Avo::BaseResource
   def fields
     field :id, as: :id
     field :contact, as: :belongs_to
+    field :phone_number, as: :belongs_to, required: -> { record.new_record? }
     field :agent, as: :belongs_to
     field :status, as: :text
     field :last_activity_at, as: :date_time

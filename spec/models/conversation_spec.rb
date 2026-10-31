@@ -43,7 +43,7 @@ RSpec.describe Conversation, type: :model do
 
   describe ".unassigned" do
     let_it_be(:contact) { create(:contact) }
-    let_it_be(:agent) { create(:agent, company: contact.company) }
+    let_it_be(:agent) { create(:agent, company: contact.company, role: "admin") }
     let_it_be(:unassigned_conversation) { create(:conversation, contact: contact, agent: nil) }
     let_it_be(:assigned_conversation) { create(:conversation, contact: contact, agent: agent) }
 
@@ -53,7 +53,7 @@ RSpec.describe Conversation, type: :model do
   end
 
   describe "record lifecycle" do
-    let_it_be(:agent, refind: true) { create(:agent) }
+    let_it_be(:agent, refind: true) { create(:agent, role: "admin") }
     let_it_be(:contact, refind: true) { create(:contact, company: agent.company) }
     let_it_be(:conversation, refind: true) { create(:conversation, contact: contact, agent: agent) }
     let(:conversation_without_contact) { build(:conversation, contact: nil) }
