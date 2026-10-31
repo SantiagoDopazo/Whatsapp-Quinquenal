@@ -50,10 +50,8 @@ RSpec.describe Message, type: :model do
     expect { inbound.save!(validate: false) }.to raise_error(ActiveRecord::InvalidForeignKey)
   end
 
-  it "requires an outbound author authorized on the number" do
+  it "accepts any outbound author from the same company" do
     outbound.agent = operator
-    expect(outbound).not_to be_valid
-    PhoneNumberAccess.create!(agent: operator, phone_number: conversation.phone_number)
     expect(outbound).to be_valid
     outbound.agent = nil
     expect(outbound).not_to be_valid
@@ -159,11 +157,10 @@ RSpec.describe Message, type: :model do
     expect(conversation.reload.last_activity_at).to be_nil
   end
 
-  it "limits messages by company and authorized line" do
+  it "shares messages within the company and rejects foreign IDs" do
     inbound.save!
-    expect(CompanyAccess.new(operator).messages).to be_empty
-    PhoneNumberAccess.create!(agent: operator, phone_number: conversation.phone_number)
-    expect(CompanyAccess.new(operator).messages).to contain_exactly(inbound)
-    expect(CompanyAccess.new(nil).messages).to be_empty
+    expect(operator.company.messages).to contain_exactly(inbound)
+    expect(foreign_number.company.messages).to be_empty
+    expect { foreign_number.company.messages.find(inbound.id) }.to raise_error(ActiveRecord::RecordNotFound)
   end
 end

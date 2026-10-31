@@ -4,14 +4,14 @@ Depende de la base de empresas (PR 03) y del soporte de pruebas #40. Existen dos
 
 | Identidad | Acceso | Ámbito |
 | --- | --- | --- |
-| Agent, roles admin/agent | API autenticada y futuro frontend BO de empresas | Solo su empresa; los permisos por número se agregan en PR 05 |
+| Agent, roles admin/agent | API autenticada y futuro frontend BO de empresas | Todos los datos de su empresa, sin permisos individuales por número |
 | Developer | Login interno /login y Avo | Administración interna de todas las empresas |
 
 El rol admin de Agent no habilita Avo. Una sesión o JWT de agente recibe 403 en el panel interno. Sus credenciales tampoco permiten iniciar sesión en /login. Developer tiene una tabla y un scope Devise independientes, sin company_id, sin JWT, sin registro público ni recurso CRUD para crear desarrolladores. Las cuentas internas se aprovisionan fuera del BO de clientes.
 
 ## API de las empresas
 
-`POST /agents/sign_in` mantiene la autenticación de agentes; `GET /agents/:id` devuelve id, email, name y role solo para compañeros de la empresa del usuario. Un ID ajeno devuelve 404, igual que uno inexistente; sin autenticación devuelve 401. CompanyAccess mantiene consultas explícitas para las futuras rutas del BO, sin conceder privilegios internos por el rol admin de una empresa.
+`POST /agents/sign_in` mantiene la autenticación de agentes; `GET /agents/:id` devuelve id, email, name y role solo para compañeros de la empresa del usuario. Un ID ajeno devuelve 404, igual que uno inexistente; sin autenticación devuelve 401. Las consultas parten de current_agent.company y sus asociaciones. No hay una clase de acceso adicional ni permisos individuales por número; el rol admin de una empresa tampoco concede privilegios internos.
 
 El secreto JWT usa Rails.application.secret_key_base, respetando la resolución de Rails por entorno/credenciales. No depende exclusivamente de que pueda descifrarse el archivo de credenciales en el checkout de pruebas. Una sesión interna no inicia sesión como agente ni emite JWT de empresa.
 
@@ -39,7 +39,7 @@ Se verifican login interno, logout, rechazo de credenciales de empresas, sesione
 
 ## Consultas explícitas de acceso
 
-CompanyAccess expone companies, agents, contacts y conversations. Se elimina scope(model) y la selección por nombres de clases; los métodos devuelven relaciones filtradas, también vacías sin un agente. No cambia rutas, permisos ni datos. Validación del refactor: 48 ejemplos RSpec sin fallos en PostgreSQL temporal y RuboCop de modelo/spec sin infracciones.
+Se usan current_agent.company.agents, contacts y conversations; desde PR 05 también phone_numbers y desde PR 06 messages. Todos los operarios comparten el ámbito de su empresa. La autenticación sigue siendo obligatoria antes de consultar; un ID ajeno devuelve 404.
 
 Validación de seeds fijas: ejemplo de alta en PostgreSQL temporal y RuboCop de seeds/spec.
 
