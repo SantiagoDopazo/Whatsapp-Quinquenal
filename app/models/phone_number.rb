@@ -3,6 +3,7 @@ class PhoneNumber < ApplicationRecord
 
   belongs_to :whatsapp_account
   has_many :conversations, dependent: :restrict_with_error
+  has_many :messages, dependent: :restrict_with_error
 
   delegate :company, :company_id, to: :whatsapp_account
 
