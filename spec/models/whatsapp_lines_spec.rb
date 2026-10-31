@@ -29,8 +29,9 @@ RSpec.describe "WhatsApp lines", type: :model do
     expect(conversation.update(status: :open)).to be(false)
   end
 
-  it "requires a line for new conversations" do
+  it "requires a line when creating or updating a conversation" do
     expect(build(:conversation, contact: contact, phone_number: nil)).not_to be_valid
+    expect(conversation.update(phone_number: nil)).to be(false)
   end
 
   it "rejects contacts and agents from a different company" do
@@ -56,6 +57,11 @@ RSpec.describe "WhatsApp lines", type: :model do
     expect(conversation.update(phone_number: nil)).to be(false)
   end
 
+  it "does not change a conversation's contact" do
+    expect(conversation.update(contact: create(:contact, company: company))).to be(false)
+    expect(conversation.errors[:contact]).to include("cannot be changed")
+  end
+
   it "does not move a provider account between companies" do
     expect(number.whatsapp_account.update(company: foreign_number.company)).to be(false)
   end
@@ -72,22 +78,5 @@ RSpec.describe "WhatsApp lines", type: :model do
 
   it "rejects unknown connection states in the database" do
     expect { number.update_columns(status: "unknown") }.to raise_error(ActiveRecord::StatementInvalid)
-  end
-
-  context "with an old conversation without a known line" do
-    let(:legacy) { build(:conversation, contact: contact, phone_number: nil) }
-
-    before { legacy.save!(validate: false) }
-
-    it "keeps the record editable and visible to all company operators" do
-      expect(legacy.update(status: :pending)).to be(true)
-      expect(admin.company.conversations).to include(legacy)
-      expect(operator.company.conversations).to include(legacy)
-    end
-
-    it "allows an explicit assignment to a known line" do
-      expect(legacy.update(phone_number: second_number)).to be(true)
-      expect(legacy.reload.phone_number).to eq(second_number)
-    end
   end
 end

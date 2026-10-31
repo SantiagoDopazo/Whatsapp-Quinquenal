@@ -39,9 +39,10 @@ RSpec.describe Message, type: :model do
     expect(outbound).not_to be_valid
   end
 
-  it "does not allow messages on legacy conversations without a line" do
-    conversation.update_columns(phone_number_id: nil)
-    expect(build(:message, conversation: conversation)).not_to be_valid
+  it "uses the conversation's source number when omitted" do
+    inbound.phone_number = nil
+    inbound.save!
+    expect(inbound.reload.phone_number).to eq(conversation.phone_number)
   end
 
   it "does not allow mismatched conversation and number even through SQL writes" do

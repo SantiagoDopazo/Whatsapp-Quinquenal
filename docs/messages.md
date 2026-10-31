@@ -2,7 +2,7 @@
 
 Depende de cuentas y líneas del PR 05 (#42). Esta entrega modela el historial sin conectarse a Meta ni agregar todavía una ruta para enviar mensajes.
 
-Message pertenece a una conversación y a su misma línea. Una clave foránea compuesta respalda esa correspondencia incluso al omitir validaciones de Active Record. Una conversación anterior sin número debe recibir una línea conocida antes de admitir mensajes.
+Message pertenece a una conversación y a su misma línea. Una clave foránea compuesta respalda esa correspondencia incluso al omitir validaciones de Active Record. Todas las conversaciones requieren una línea desde el alta, también en la base de datos; no se contempla compatibilidad con conversaciones anteriores sin número.
 
 Los mensajes entrantes guardan dirección inbound, estado received e identificador externo obligatorio. Los salientes guardan dirección outbound, autor autorizado, estado inicial queued e identificador client_request_id estable (UUID generado si no se proporciona). El identificador externo se incorpora al confirmar aceptación del proveedor y luego no puede reemplazarse. Índices únicos por línea e identificador externo/client_request_id respaldan la deduplicación ante concurrencia. El consumidor debe resolver RecordNotUnique recuperando el mensaje existente; este PR no implementa recepción ni envío.
 
