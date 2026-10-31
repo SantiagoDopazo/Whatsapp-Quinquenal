@@ -1,0 +1,14 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [{
+    "id": "WABA_TEST_001",
+    "changes": [{
+      "field": "messages",
+      "value": {
+        "messaging_product": "whatsapp",
+        "metadata": {"display_phone_number": "15555550100", "phone_number_id": "PHONE_TEST_001"},
+        "statuses": [{"id": "wamid.SYNTHETIC_OUTBOUND_001", "status": "delivered", "timestamp": "1793354401", "recipient_id": "15555550101"}]
+      }
+    }]
+  }]
+}
