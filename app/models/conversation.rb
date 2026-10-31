@@ -33,7 +33,6 @@ class Conversation < ApplicationRecord
     scope: :phone_number_id, conditions: -> { where(status: [ :open, :pending ]) }
   }, if: -> { phone_number_id.present? && !closed? }
   validate :phone_number_belongs_to_contact_company
-  validate :agent_has_phone_number_access
   validate :identity_cannot_change, on: :update
 
   enum :status, { open: 0, pending: 1, closed: 2 }, default: :open
@@ -45,12 +44,6 @@ class Conversation < ApplicationRecord
   def phone_number_belongs_to_contact_company
     if phone_number && contact && phone_number.company != contact.company
       errors.add(:phone_number, "must belong to the contact's company")
-    end
-  end
-
-  def agent_has_phone_number_access
-    if agent && phone_number && !agent.can_access_phone_number?(phone_number)
-      errors.add(:agent, "must have access to the phone number")
     end
   end
 
