@@ -30,6 +30,7 @@ class Agent < ApplicationRecord
 
   belongs_to :company
   has_many :conversations, dependent: :nullify
+  has_many :messages, dependent: :nullify
 
   validates :name, presence: true
   validates :role, inclusion: { in: ROLES }
