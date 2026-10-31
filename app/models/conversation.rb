@@ -33,7 +33,8 @@ class Conversation < ApplicationRecord
   validates :contact_id, uniqueness: {
     scope: :phone_number_id, conditions: -> { where(status: [ :open, :pending ]) }
   }, if: -> { phone_number_id.present? && !closed? }
-  validate :phone_number_belongs_to_contact_company
+  validate :phone_number_belongs_to_contact_company,
+    if: -> { phone_number.present? && contact.present? }
   validate :identity_cannot_change, on: :update
 
   enum :status, { open: 0, pending: 1, closed: 2 }, default: :open
@@ -43,7 +44,7 @@ class Conversation < ApplicationRecord
   private
 
   def phone_number_belongs_to_contact_company
-    if phone_number && contact && phone_number.company != contact.company
+    if phone_number.company != contact.company
       errors.add(:phone_number, "must belong to the contact's company")
     end
   end
