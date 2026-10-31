@@ -2,14 +2,13 @@ require "rails_helper"
 
 RSpec.describe "WhatsApp lines", type: :model do
   let_it_be(:company) { create(:company) }
-  let_it_be(:admin) { create(:agent, company: company, role: "admin") }
-  let_it_be(:operator) { create(:agent, company: company) }
+  let_it_be(:admin, refind: true) { create(:agent, company: company, role: "admin") }
+  let_it_be(:operator, refind: true) { create(:agent, company: company) }
   let_it_be(:number, refind: true) { create(:phone_number, company: company) }
   let_it_be(:second_number) { create(:phone_number, company: company) }
   let_it_be(:foreign_number) { create(:phone_number) }
   let_it_be(:contact) { create(:contact, company: company) }
   let_it_be(:conversation, refind: true) { create(:conversation, contact: contact, phone_number: number) }
-  let(:grant) { PhoneNumberAccess.new(agent: operator, phone_number: number) }
   let(:duplicate) { build(:conversation, contact: contact, phone_number: number) }
 
   it "keeps independent chats for the same customer on two lines" do
@@ -34,39 +33,21 @@ RSpec.describe "WhatsApp lines", type: :model do
     expect(build(:conversation, contact: contact, phone_number: nil)).not_to be_valid
   end
 
-  it "rejects contacts and grants from a different company" do
+  it "rejects contacts and agents from a different company" do
     expect(build(:conversation, contact: contact, phone_number: foreign_number)).not_to be_valid
-    expect(PhoneNumberAccess.new(agent: operator, phone_number: foreign_number)).not_to be_valid
-    expect(admin.can_access_phone_number?(foreign_number)).to be(false)
+    expect(conversation.update(agent: create(:agent, company: foreign_number.company))).to be(false)
   end
 
-  it "does not implicitly authorize operators on any company line" do
-    expect(operator.accessible_phone_numbers).to be_empty
-    expect(CompanyAccess.new(operator).conversations).to be_empty
-    expect(conversation.update(agent: operator)).to be(false)
-  end
-
-  it "allows only granted lines and applies revocation immediately" do
-    grant.save!
-    expect(operator.accessible_phone_numbers).to contain_exactly(number)
-    expect(CompanyAccess.new(operator).conversations).to contain_exactly(conversation)
+  it "allows every operator to see all company lines and conversations" do
+    expect(operator.company.phone_numbers).to contain_exactly(number, second_number)
+    expect(operator.company.conversations).to contain_exactly(conversation)
     expect(conversation.update(agent: operator)).to be(true)
-    grant.destroy!
-    expect(operator.can_access_phone_number?(number)).to be(false)
-    expect(CompanyAccess.new(operator).conversations).to be_empty
+    expect { operator.company.phone_numbers.find(foreign_number.id) }.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-  it "allows administrators every line of their own company" do
-    expect(admin.accessible_phone_numbers).to contain_exactly(number, second_number)
-    expect(conversation.update(agent: admin)).to be(true)
-    expect(CompanyAccess.new(admin).phone_numbers).not_to include(foreign_number)
-  end
-
-  it "deduplicates grants at database level" do
-    grant.save!
-    expect {
-      PhoneNumberAccess.new(agent: operator, phone_number: number).save!(validate: false)
-    }.to raise_error(ActiveRecord::RecordNotUnique)
+  it "gives administrators the same company scope" do
+    expect(admin.company.phone_numbers).to contain_exactly(number, second_number)
+    expect(admin.company.conversations).to contain_exactly(conversation)
   end
 
   it "does not move a number to another account or move a conversation to another number" do
@@ -98,10 +79,10 @@ RSpec.describe "WhatsApp lines", type: :model do
 
     before { legacy.save!(validate: false) }
 
-    it "keeps the record editable and visible only to administrators until a line is assigned" do
+    it "keeps the record editable and visible to all company operators" do
       expect(legacy.update(status: :pending)).to be(true)
-      expect(CompanyAccess.new(admin).conversations).to include(legacy)
-      expect(CompanyAccess.new(operator).conversations).not_to include(legacy)
+      expect(admin.company.conversations).to include(legacy)
+      expect(operator.company.conversations).to include(legacy)
     end
 
     it "allows an explicit assignment to a known line" do

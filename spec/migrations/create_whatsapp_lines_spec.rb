@@ -32,6 +32,7 @@ RSpec.describe CreateWhatsappLines, type: :model do
 
   it "preserves old chats without inventing a line and rolls back without deleting them" do
     migration.migrate(:up)
+    expect(connection.table_exists?(:phone_number_accesses)).to be(false)
     expect(connection.select_value("SELECT phone_number_id FROM conversations WHERE id = 1")).to be_nil
     expect(connection.select_value("SELECT COUNT(*) FROM phone_numbers")).to eq(0)
     migration.migrate(:down)
