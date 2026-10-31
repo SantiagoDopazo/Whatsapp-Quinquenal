@@ -1,0 +1,15 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [{
+    "id": "WABA_TEST_001",
+    "changes": [{
+      "field": "messages",
+      "value": {
+        "messaging_product": "whatsapp",
+        "metadata": {"display_phone_number": "15555550100", "phone_number_id": "PHONE_TEST_001"},
+        "contacts": [{"profile": {"name": "Cliente de prueba"}, "wa_id": "15555550101"}],
+        "messages": [{"from": "15555550101", "id": "wamid.SYNTHETIC_INBOUND_001", "timestamp": "1793354400", "type": "text", "text": {"body": "Consulta sintética de prueba"}}]
+      }
+    }]
+  }]
+}
