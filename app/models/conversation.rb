@@ -28,7 +28,8 @@ class Conversation < ApplicationRecord
 
   delegate :company, to: :contact, allow_nil: true
 
-  validate :agent_belongs_to_contact_company
+  validate :agent_belongs_to_contact_company,
+    if: -> { agent.present? && contact.present? }
   validates :phone_number, presence: true, on: :create
   validates :contact_id, uniqueness: {
     scope: :phone_number_id, conditions: -> { where(status: [ :open, :pending ]) }
@@ -57,7 +58,7 @@ class Conversation < ApplicationRecord
   end
 
   def agent_belongs_to_contact_company
-    if agent && contact && agent.company != contact.company
+    if agent.company != contact.company
       errors.add(:agent, "must belong to the contact's company")
     end
   end
