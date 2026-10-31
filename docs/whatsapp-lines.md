@@ -21,3 +21,5 @@ Se comprueban separación por empresa, acceso compartido entre operarios, asigna
 ## Cambio de esquema antes de integrar
 
 Se retira la tabla de permisos de la migración de líneas todavía no integrada a main. Una base local que ya ejecutó la versión anterior necesita recrearse para reflejar este esquema; no se agrega una migración destructiva ni se ejecuta sobre bases habituales.
+
+Resultado de esta simplificación: 61 ejemplos RSpec aprobados en una base temporal nueva, incluyendo ausencia de la tabla de permisos y migración/rollback. RuboCop de los nueve archivos Ruby modificados sin infracciones.
