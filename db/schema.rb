@@ -107,16 +107,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_230000) do
     t.check_constraint "message_type::text = ANY (ARRAY['text'::character varying, 'unsupported'::character varying]::text[])", name: "messages_valid_type"
   end
 
-  create_table "phone_number_accesses", force: :cascade do |t|
-    t.bigint "agent_id", null: false
-    t.datetime "created_at", null: false
-    t.bigint "phone_number_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["agent_id", "phone_number_id"], name: "index_phone_number_accesses_on_agent_id_and_phone_number_id", unique: true
-    t.index ["agent_id"], name: "index_phone_number_accesses_on_agent_id"
-    t.index ["phone_number_id"], name: "index_phone_number_accesses_on_phone_number_id"
-  end
-
   create_table "phone_numbers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "display_phone_number", null: false
@@ -150,8 +140,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_230000) do
   add_foreign_key "messages", "agents", on_delete: :nullify
   add_foreign_key "messages", "conversations", column: ["conversation_id", "phone_number_id"], primary_key: ["id", "phone_number_id"]
   add_foreign_key "messages", "phone_numbers"
-  add_foreign_key "phone_number_accesses", "agents"
-  add_foreign_key "phone_number_accesses", "phone_numbers"
   add_foreign_key "phone_numbers", "whatsapp_accounts"
   add_foreign_key "whatsapp_accounts", "companies"
 end

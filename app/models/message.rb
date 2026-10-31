@@ -32,7 +32,6 @@ class Message < ApplicationRecord
   validates :agent, presence: true, on: :create, if: :direction_outbound?
   validate :references_are_consistent
   validate :state_matches_direction
-  validate :author_has_access, on: :create
   validate :persisted_identity_cannot_change, on: :update
   validate :state_transition_is_valid, on: :update
 
@@ -77,12 +76,6 @@ class Message < ApplicationRecord
     elsif direction_outbound?
       errors.add(:status, "cannot be received for outbound messages") if status_received?
       errors.add(:message_type, "must be text for outbound messages") unless message_type_text?
-    end
-  end
-
-  def author_has_access
-    if direction_outbound? && agent && phone_number && !agent.can_access_phone_number?(phone_number)
-      errors.add(:agent, "must have access to the phone number")
     end
   end
 

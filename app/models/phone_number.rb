@@ -2,8 +2,6 @@ class PhoneNumber < ApplicationRecord
   STATUSES = %w[pending connected disabled].freeze
 
   belongs_to :whatsapp_account
-  has_many :phone_number_accesses, dependent: :destroy
-  has_many :agents, through: :phone_number_accesses
   has_many :conversations, dependent: :restrict_with_error
   has_many :messages, dependent: :restrict_with_error
 
