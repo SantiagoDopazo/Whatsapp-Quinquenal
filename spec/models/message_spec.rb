@@ -61,8 +61,30 @@ RSpec.describe Message, type: :model do
   it "rejects an author from another company" do
     outbound.agent = create(:agent, company: foreign_number.company, role: "admin")
     expect(outbound).not_to be_valid
+  end
+
+  it "keeps inbound messages received and without an operator as author" do
+    inbound.status = :queued
+    expect(inbound).not_to be_valid
+    expect(inbound.errors[:status]).to include("must be received for inbound messages")
+    inbound.status = :received
     inbound.agent = operator
     expect(inbound).not_to be_valid
+    expect(inbound.errors[:agent]).to include("must be absent for inbound messages")
+  end
+
+  it "does not allow an outbound message in received status" do
+    outbound.status = :received
+    expect(outbound).not_to be_valid
+    expect(outbound.errors[:status]).to include("cannot be received for outbound messages")
+  end
+
+  it "reports missing source associations without raising exceptions" do
+    inbound.conversation = nil
+    inbound.phone_number = nil
+    expect(inbound).not_to be_valid
+    expect(inbound.errors[:conversation]).to be_present
+    expect(inbound.errors[:phone_number]).to be_present
   end
 
   context "with a stored inbound message" do
